@@ -1,0 +1,118 @@
+@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Space+Grotesk:wght@300..700&display=swap');
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Playfair Display", serif;
+  --font-accent: "Space Grotesk", sans-serif;
+  --font-logo: "Outfit", sans-serif;
+}
+
+/* Leaflet Custom Styles */
+.leaflet-popup-content-wrapper {
+  background: rgba(255, 255, 255, 0.94) !important;
+  backdrop-filter: blur(16px) !important;
+  border-radius: 24px !important;
+  border: 1px solid rgba(146, 64, 14, 0.08) !important;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15) !important;
+  padding: 0 !important;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  width: auto !important;
+}
+
+.leaflet-popup-tip {
+  background: rgba(255, 255, 255, 0.94) !important;
+  backdrop-filter: blur(16px) !important;
+}
+
+.leaflet-container {
+  font-family: inherit !important;
+}
+
+.leaflet-bar {
+  border: none !important;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1) !important;
+}
+
+.leaflet-bar a {
+  background-color: white !important;
+  color: #0f172a !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  width: 44px !important;
+  height: 44px !important;
+  line-height: 44px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.leaflet-bar a:first-child {
+  border-radius: 16px 16px 0 0 !important;
+}
+
+.leaflet-bar a:last-child {
+  border-radius: 0 0 16px 16px !important;
+  border-bottom: none !important;
+}
+
+.leaflet-bar a:hover {
+  background-color: #f8fafc !important;
+  color: #92400e !important;
+  transform: scale(1.05);
+}
+
+body {
+  background-color: #faf7f2;
+  background-image: 
+    radial-gradient(circle at 50% -20%, rgba(146, 64, 14, 0.08) 0%, transparent 60%),
+    radial-gradient(circle at 100% 100%, rgba(180, 83, 9, 0.05) 0%, transparent 40%);
+  background-attachment: fixed;
+  color: #2d1b0d;
+  -webkit-font-smoothing: antialiased;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(146, 64, 14, 0.08);
+  box-shadow: 0 4px 30px rgba(69, 26, 3, 0.03);
+}
+
+.premium-card {
+  background: #ffffff;
+  border: 1px solid rgba(146, 64, 14, 0.05);
+  box-shadow: 0 10px 30px -5px rgba(69, 26, 3, 0.04);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.premium-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -10px rgba(69, 26, 3, 0.08);
+  border-color: rgba(217, 119, 6, 0.2);
+}
+
+.earthy-gradient {
+  background: linear-gradient(135deg, #2d1b0d 0%, #451a03 50%, #78350f 100%);
+}
+
+.indigenous-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 30L0 0l60 0-30 30zM30 30l30 30-60 0 30-30z' fill='%2392400e' fill-opacity='0.03'/%3E%3C/svg%3E");
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+/* Custom transitions */
+.page-transition-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 400ms, transform 400ms;
+}
