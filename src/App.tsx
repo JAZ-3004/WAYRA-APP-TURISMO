@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Search, MapPin, Calendar as CalendarIcon, PartyPopper, ChevronLeft, ChevronRight, Info, X, Music, Map as MapIcon, Navigation, ExternalLink, Locate, ArrowRight, RefreshCw, Loader2, Bus, List, Compass, Bell, Trash2, Clock, ShoppingBag } from 'lucide-react';
 import { MUNICIPALITIES as FALLBACK_MUNICIPALITIES, PROVINCES, Municipality, GALLERY_CATEGORIES, GALLERY_IMAGES, GalleryItem, PASTO_EVENTS, DetailedEvent, TypicalFood, CURIOSITIES, WORDS_NARINENSES, DIALECT_INFO } from './data';
 import wairaLogo from '../assets/WAIRA APP_1 png.png';
+import solDeLosPastos from '../assets/SOL DE LOS PASTOS PNG.png';
 import Papa from 'papaparse';
 import { Leaf, Sparkles, Image as ImageIcon, UtensilsCrossed, Utensils, Languages } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, ZoomControl } from 'react-leaflet';
@@ -1111,8 +1112,8 @@ export default function App() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/70 z-10" />
         
         {/* Sol de los Pastos Overlay */}
-        <div className="absolute top-4 right-4 w-12 h-12 opacity-80 z-20">
-          <img src="https://www.svgrepo.com/show/381534/star-8.svg" className="w-full h-full invert" alt="Sol de los Pastos" />
+        <div className="absolute top-4 right-4 w-12 h-12 opacity-90 z-20 hover:scale-110 transition-transform duration-300">
+          <img src={solDeLosPastos} className="w-full h-full object-contain" alt="Sol de los Pastos" referrerPolicy="no-referrer" />
         </div>
       </div>
 
