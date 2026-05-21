@@ -1,7 +1,10 @@
 {
-  "name": "Remix: Remix: Remix: Remix: Fiestas de Nariño: ¡Que Viva Pasto!",
+  "name": "Wayra: Fiestas de Nariño",
   "description": "Explora las vibrantes fiestas tradicionales de los 64 municipios de Nariño con una estética festiva inspirada en el Carnaval de Negros y Blancos.",
   "requestFramePermissions": [
     "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
   ]
 }
