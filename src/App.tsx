@@ -1185,8 +1185,8 @@ export default function App() {
               <div className="bg-gradient-to-r from-amber-900 to-amber-950 text-white p-5 rounded-[2rem] shadow-xl border border-amber-800/10 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 blur-2xl rounded-full pointer-events-none" />
                 <div className="relative z-10 flex items-center gap-4">
-                  <div className="p-1 bg-white/10 rounded-2xl shrink-0 border border-white/20">
-                    <img src={wairaLogo} className="w-11 h-11 object-contain rounded-xl" alt="Waira App Logo" referrerPolicy="no-referrer" />
+                  <div className="p-3 bg-amber-500/10 rounded-2xl text-amber-400 shrink-0 border border-amber-500/20">
+                    <ShoppingBag size={24} />
                   </div>
                   <div className="flex-1">
                     <h3 className="font-logo font-black uppercase text-xs tracking-wider text-amber-400">Instala Wayra</h3>
