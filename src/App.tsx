@@ -347,8 +347,60 @@ export default function App() {
   // PWA Install states
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
+  const [showInstallGuideModal, setShowInstallGuideModal] = useState(false);
 
   useEffect(() => {
+    // Check if app is opened in PWA standalone mode
+    const checkStandalone = () => {
+      try {
+        let isStandalonePWA = false;
+        
+        if (typeof window !== 'undefined') {
+          isStandalonePWA = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || 
+                             (navigator as any).standalone || 
+                             (document.referrer && document.referrer.includes('android-app://'));
+        }
+        
+        setIsStandalone(isStandalonePWA);
+        
+        // If we are NOT in standalone mode, show our friendly install banner
+        let bannerClosed = false;
+        try {
+          bannerClosed = sessionStorage.getItem('pwa-banner-closed') === 'true';
+        } catch (storageError) {
+          console.warn("sessionStorage no está disponible o está bloqueado en este contexto (ej. iframe privado):", storageError);
+        }
+        
+        if (!isStandalonePWA && !bannerClosed) {
+          setShowInstallBanner(true);
+        }
+      } catch (err) {
+        console.error("Error en la detección de PWA:", err);
+      }
+    };
+
+    checkStandalone();
+    
+    // Listen to changes in display mode
+    let mql: MediaQueryList | null = null;
+    let handleModeChange: ((e: MediaQueryListEvent) => void) | null = null;
+    
+    try {
+      if (typeof window !== 'undefined' && window.matchMedia) {
+        mql = window.matchMedia('(display-mode: standalone)');
+        handleModeChange = (e: MediaQueryListEvent) => {
+          setIsStandalone(e.matches);
+          if (e.matches) {
+            setShowInstallBanner(false);
+          }
+        };
+        mql.addEventListener('change', handleModeChange);
+      }
+    } catch (err) {
+      console.warn("matchMedia change listener no es soportado:", err);
+    }
+
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e);
@@ -358,16 +410,34 @@ export default function App() {
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
     return () => {
+      try {
+        if (mql && handleModeChange) {
+          mql.removeEventListener('change', handleModeChange);
+        }
+      } catch (e) {}
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     };
   }, []);
 
   const handleInstallApp = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    console.log(`PWA install response: ${outcome}`);
-    setDeferredPrompt(null);
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`PWA install response: ${outcome}`);
+      setDeferredPrompt(null);
+      setShowInstallBanner(false);
+    } else {
+      // If not supported instantly or no native prompt yet, open our manual install guide
+      setShowInstallGuideModal(true);
+    }
+  };
+
+  const handleCloseBanner = () => {
+    try {
+      sessionStorage.setItem('pwa-banner-closed', 'true');
+    } catch (e) {
+      console.warn("No se pudo escribir en sessionStorage:", e);
+    }
     setShowInstallBanner(false);
   };
 
@@ -1175,7 +1245,7 @@ export default function App() {
       <main className="max-w-md mx-auto px-6 mt-6 relative z-20 pb-12">
         {/* PWA Install Banner */}
         <AnimatePresence>
-          {showInstallBanner && (
+          {showInstallBanner && !isStandalone && (
             <motion.div
               initial={{ opacity: 0, y: -20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -1191,7 +1261,7 @@ export default function App() {
                   <div className="flex-1">
                     <h3 className="font-logo font-black uppercase text-xs tracking-wider text-amber-400">Instala Wayra</h3>
                     <p className="text-[10px] text-amber-100/70 font-sans mt-0.5 leading-relaxed">
-                      Accede más rápido, ahorra datos y disfruta de una experiencia nativa sin barras de navegación.
+                      Accede más rápido y disfruta de una experiencia nativa fluida en tu celular o computador.
                     </p>
                   </div>
                   <div className="flex flex-col gap-1.5 shrink-0">
@@ -1199,10 +1269,10 @@ export default function App() {
                       onClick={handleInstallApp}
                       className="px-4 py-2 bg-amber-500 text-amber-950 font-sans font-black uppercase tracking-wider text-[9px] rounded-xl hover:bg-amber-400 transition-colors shadow-lg cursor-pointer"
                     >
-                      Instalar
+                      {deferredPrompt ? 'Instalar' : 'Guía / Instalar'}
                     </button>
                     <button
-                      onClick={() => setShowInstallBanner(false)}
+                      onClick={handleCloseBanner}
                       className="text-[9px] font-sans font-black uppercase tracking-wider text-amber-200/50 hover:text-amber-200 cursor-pointer text-center py-1"
                     >
                       Luego
@@ -1258,6 +1328,22 @@ export default function App() {
                 </button>
               </div>
             </div>
+
+            {/* PWA Badge or Shortcut */}
+            {!isStandalone && (
+              <div className="flex justify-center -mt-4">
+                <button 
+                  onClick={() => setShowInstallGuideModal(true)}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-amber-500/10 to-amber-600/10 hover:from-amber-500/20 hover:to-amber-600/20 text-amber-600 rounded-full text-xs font-accent font-black uppercase tracking-wider border border-amber-500/30 transition-all cursor-pointer shadow-md hover:scale-105 active:scale-95 duration-300"
+                >
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
+                  </span>
+                  📲 Instalar en Celular / PC (PWA)
+                </button>
+              </div>
+            )}
           </motion.div>
         )}
 
@@ -3191,6 +3277,156 @@ export default function App() {
                     </button>
                   </div>
                 </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* PWA Installation Guide Modal */}
+      <AnimatePresence>
+        {showInstallGuideModal && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowInstallGuideModal(false)}
+              className="absolute inset-0 bg-amber-950/90 backdrop-blur-md"
+            />
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="relative bg-amber-50 w-full max-w-md max-h-[85vh] rounded-[2.5rem] overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.5)] flex flex-col border-4 border-amber-600 z-50 font-sans"
+            >
+              {/* Header */}
+              <div className="p-6 earthy-gradient text-white flex items-center justify-between shrink-0 relative overflow-hidden">
+                <div className="absolute inset-0 bg-[url('https://www.svgrepo.com/show/381534/star-8.svg')] bg-[length:200px_200px] bg-center opacity-5 pointer-events-none" />
+                <div className="flex items-center gap-3 relative z-10">
+                  <div className="bg-amber-500/20 p-2.5 rounded-2xl border border-amber-400/20 text-amber-300">
+                    <ShoppingBag size={22} className="animate-bounce" />
+                  </div>
+                  <div>
+                    <h3 className="font-logo font-black text-xs uppercase tracking-widest text-amber-400 leading-none">Instalar Wayra</h3>
+                    <p className="text-[9px] text-amber-200/70 font-sans mt-1 uppercase tracking-wider">Lleva el folklore en tu celular o PC</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setShowInstallGuideModal(false)} 
+                  className="w-10 h-10 rounded-2xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors relative z-10 cursor-pointer"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              {/* Scrollable Container */}
+              <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-thin scrollbar-thumb-amber-200 scrollbar-track-transparent">
+                {/* Iframe Warning / Detect */}
+                {(() => {
+                  try {
+                    return typeof window !== 'undefined' && window.self !== window.top;
+                  } catch (e) {
+                    return true;
+                  }
+                })() && (
+                  <div className="bg-amber-500/10 border-2 border-dashed border-amber-500/30 p-4 rounded-3xl space-y-2.5">
+                    <p className="text-xs font-bold text-amber-800 flex items-center gap-2">
+                      <Info size={16} className="text-amber-600 shrink-0" />
+                      Visor de IA Detectado
+                    </p>
+                    <p className="text-[10px] text-amber-900/80 leading-relaxed font-medium">
+                      Estás viendo la app en un panel de vista previa (iframe). Los navegadores bloquean la instalación de aplicaciones web dentro de estos paneles por razones de seguridad.
+                    </p>
+                    <button
+                      onClick={() => window.open(window.location.href, '_blank')}
+                      className="w-full py-2.5 bg-amber-500 text-amber-950 hover:bg-amber-400 rounded-xl text-[10px] font-sans font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-md cursor-pointer"
+                    >
+                      <ExternalLink size={14} /> Abrir en pestaña nueva
+                    </button>
+                  </div>
+                )}
+
+                {/* Benefits */}
+                <div className="bg-white/80 p-5 rounded-3xl border border-amber-100 shadow-sm space-y-3">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-amber-600">¿Por qué instalar Wayra?</p>
+                  <ul className="space-y-2 text-[11px] text-slate-700 font-medium font-sans">
+                    <li className="flex items-start gap-2">
+                      <span className="text-amber-500 font-bold shrink-0">✓</span>
+                      <span><strong>Acceso instantáneo</strong> desde tu pantalla de inicio como una App nativa.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-amber-500 font-bold shrink-0">✓</span>
+                      <span><strong>Navegación fluida</strong> a pantalla completa (sin barra del navegador).</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-amber-500 font-bold shrink-0">✓</span>
+                      <span><strong>Eficiencia</strong> de datos y velocidad optimizada.</span>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Instructions by Platform */}
+                <div className="space-y-4">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Instrucciones de Instalación</p>
+                  
+                  {/* Option 1: Native installer button */}
+                  {deferredPrompt && (
+                    <div className="bg-amber-950 text-white p-5 rounded-3xl border border-amber-800/20 text-center space-y-3 shadow-lg">
+                      <p className="text-xs font-bold text-amber-400">Tu navegador es compatible de forma directa</p>
+                      <p className="text-[10px] text-amber-100/70 leading-relaxed font-sans">Instala la app automáticamente pulsando el siguiente botón:</p>
+                      <button
+                        onClick={handleInstallApp}
+                        className="w-full py-3 bg-amber-500 text-amber-950 font-sans font-black uppercase tracking-widest text-xs rounded-xl hover:bg-amber-400 transition-colors shadow-xl cursor-pointer"
+                      >
+                        ¡Instalar Ahora!
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Android Card */}
+                  <div className="p-5 bg-white rounded-3xl border border-slate-100 shadow-sm space-y-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-xs">A</div>
+                      <h4 className="text-xs font-black uppercase text-slate-800 font-sans">Android (Chrome / Edge)</h4>
+                    </div>
+                    <ol className="list-decimal list-inside space-y-1.5 text-[11px] text-slate-600 font-medium pl-1 leading-relaxed font-sans">
+                      <li>Abre Wayra en el navegador <strong>Chrome</strong>.</li>
+                      <li>Toca el menú de tres puntos (<strong>⋮</strong>) arriba a la derecha.</li>
+                      <li>Presiona <strong>"Instalar aplicación"</strong> o <strong>"Agregar a la pantalla principal"</strong>.</li>
+                    </ol>
+                  </div>
+
+                  {/* iOS Card */}
+                  <div className="p-5 bg-white rounded-3xl border border-slate-100 shadow-sm space-y-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xs">i</div>
+                      <h4 className="text-xs font-black uppercase text-slate-800 font-sans">iPhone o iPad (Safari)</h4>
+                    </div>
+                    <ol className="list-decimal list-inside space-y-1.5 text-[11px] text-slate-600 font-medium pl-1 leading-relaxed font-sans">
+                      <li>Abre el navegador <strong>Safari</strong> de Apple.</li>
+                      <li>Toca el botón <strong>Compartir</strong> (icono de cuadrado con una flecha hacia arriba).</li>
+                      <li>Desplázate hacia abajo y selecciona <strong>"Agregar a pantalla de inicio"</strong>.</li>
+                    </ol>
+                  </div>
+
+                  {/* Desktop Card */}
+                  <div className="p-5 bg-white rounded-3xl border border-slate-100 shadow-sm space-y-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs">C</div>
+                      <h4 className="text-xs font-black uppercase text-slate-800 font-sans">Computador (Mac, PC, Linux)</h4>
+                    </div>
+                    <ol className="list-decimal list-inside space-y-1.5 text-[11px] text-slate-600 font-medium pl-1 leading-relaxed font-sans">
+                      <li>En <strong>Chrome</strong> o <strong>Edge</strong>, busca el icono de <strong>Instalación</strong> (computador con flecha o tecla <strong>+</strong>) en el extremo derecho de la barra de direcciones.</li>
+                      <li>Haz clic en él y confirma la instalación pulsando <strong>"Instalar"</strong>.</li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="p-4 bg-amber-100/50 border-t border-amber-100 shrink-0 text-center">
+                <p className="text-[9px] font-medium text-amber-800/70 font-sans">Diseño optimizado para funcionar sin internet una vez cargado</p>
               </div>
             </motion.div>
           </div>
