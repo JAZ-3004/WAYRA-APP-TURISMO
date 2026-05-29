@@ -9,6 +9,23 @@
   --font-logo: "Outfit", sans-serif;
 }
 
+/* ── Scrollbar completamente oculto ─────────────────────── */
+html,
+body,
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
 /* Leaflet Custom Styles */
 .leaflet-popup-content-wrapper {
   background: rgba(255, 255, 255, 0.94) !important;
@@ -104,16 +121,6 @@ body {
 
 .text-balance {
   text-wrap: balance;
-}
-
-/* ── Scrollbar oculto ────────────────────────────────────── */
-::-webkit-scrollbar {
-  display: none;
-}
-
-* {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
 }
 
 /* Custom transitions */
