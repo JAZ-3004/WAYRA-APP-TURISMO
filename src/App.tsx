@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, Component, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Search, MapPin, Calendar as CalendarIcon, PartyPopper, ChevronLeft, ChevronRight, Info, X, Music, Map as MapIcon, Navigation, ExternalLink, Locate, ArrowRight, RefreshCw, Loader2, Bus, List, Compass, Bell, Trash2, Clock, ShoppingBag } from 'lucide-react';
 import { MUNICIPALITIES as FALLBACK_MUNICIPALITIES, PROVINCES, Municipality, GALLERY_CATEGORIES, GALLERY_IMAGES, GalleryItem, PASTO_EVENTS, DetailedEvent, TypicalFood, CURIOSITIES, WORDS_NARINENSES, DIALECT_INFO } from './data';
@@ -9,15 +9,54 @@ import { Leaf, Sparkles, Image as ImageIcon, UtensilsCrossed, Utensils, Language
 import { MapContainer, TileLayer, Marker, Popup, useMap, ZoomControl } from 'react-leaflet';
 import L from 'leaflet';
 
-// Fix for Leaflet default icon issue in React
-const DefaultIcon = L.icon({
-    iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
-    shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+// ── Leaflet default icon fix (rutas absolutas a CDN para evitar errores de build) ──
+try {
+  const DefaultIcon = L.icon({
+    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+    iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
     iconSize: [25, 41],
-    iconAnchor: [12, 41]
-});
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41],
+  });
+  L.Marker.prototype.options.icon = DefaultIcon;
+} catch (e) {
+  console.warn('[Leaflet] No se pudo configurar el icono por defecto:', e);
+}
 
-L.Marker.prototype.options.icon = DefaultIcon;
+// ── ErrorBoundary: evita pantalla en blanco si hay un error en un componente hijo ──
+interface EBState { hasError: boolean; message: string; }
+class ErrorBoundary extends Component<{ children: ReactNode }, EBState> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false, message: '' };
+  }
+  static getDerivedStateFromError(error: Error): EBState {
+    return { hasError: true, message: error?.message || 'Error desconocido' };
+  }
+  componentDidCatch(error: Error, info: React.ErrorInfo) {
+    console.error('[Wayra] Error en componente:', error, info);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#faf7f2', padding: '2rem', textAlign: 'center', fontFamily: 'sans-serif' }}>
+          <img src="/icon-192.png" alt="Wayra" style={{ width: 80, borderRadius: 20, marginBottom: 16 }} />
+          <h2 style={{ color: '#92400e', fontWeight: 900, fontSize: '1.1rem', marginBottom: 8 }}>Algo salió mal</h2>
+          <p style={{ color: '#78350f', fontSize: '0.8rem', marginBottom: 20, maxWidth: 300 }}>{this.state.message}</p>
+          <button
+            onClick={() => window.location.reload()}
+            style={{ background: '#b45309', color: 'white', border: 'none', borderRadius: 12, padding: '10px 24px', fontWeight: 700, cursor: 'pointer', fontSize: '0.85rem' }}
+          >
+            Recargar app
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 // Custom icon for the user's location
 const UserIcon = L.divIcon({
@@ -248,7 +287,7 @@ function FoodCarousel({ images, dish }: { images: string[], dish: string }) {
   );
 }
 
-export default function App() {
+function AppContent() {
   const [view, setView] = useState<View>('home');
   const [municipalities, setMunicipalities] = useState<Municipality[]>(FALLBACK_MUNICIPALITIES);
   const [galleryImages, setGalleryImages] = useState<GalleryItem[]>(GALLERY_IMAGES);
@@ -3240,5 +3279,13 @@ export default function App() {
       </AnimatePresence>
 
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <ErrorBoundary>
+      <AppContent />
+    </ErrorBoundary>
   );
 }

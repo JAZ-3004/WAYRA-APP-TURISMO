@@ -1,23 +1,35 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Wayra: Fiestas de Nariño</title>
-    
-    <!-- PWA Settings -->
+
+    <!-- PWA -->
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#2d1b0d" />
     <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- iOS PWA -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Wayra" />
-    <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png" />
-    <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+
+    <!-- Favicon y descripción -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+    <meta name="description" content="Explora las fiestas tradicionales de los 64 municipios de Nariño." />
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;background:#faf7f2;color:#92400e;flex-direction:column;gap:12px">
+        <img src="/icon-192.png" style="width:72px;border-radius:16px" alt="Wayra"/>
+        <strong>Wayra necesita JavaScript para funcionar.</strong>
+        <span style="font-size:0.85rem">Por favor activa JavaScript en tu navegador.</span>
+      </div>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-
