@@ -15,16 +15,23 @@ export default defineConfig(({ mode }) => {
         '@': path.resolve(__dirname, '.'),
       },
     },
+    // Base explícita: necesaria para que el manifest y el SW
+    // funcionen correctamente en producción
+    base: '/',
     server: {
-      // HMR is disabled in AI Studio via DISABLE_HMR env var.
+      // HMR desactivado en AI Studio mediante DISABLE_HMR
       hmr: process.env.DISABLE_HMR !== 'true',
+      port: 3000,
+      host: '0.0.0.0',
     },
     build: {
-      // Genera un manifest de assets para que el SW pueda cachearlos
+      // Genera .vite/manifest.json para referencia de assets
       manifest: true,
+      // Asegura que el SW se copie al output
+      copyPublicDir: true,
       rollupOptions: {
         output: {
-          // Nombres de archivos predecibles para el cacheo del SW
+          // Nombres de archivos predecibles para cacheo del SW
           entryFileNames: 'assets/[name]-[hash].js',
           chunkFileNames: 'assets/[name]-[hash].js',
           assetFileNames: 'assets/[name]-[hash].[ext]',

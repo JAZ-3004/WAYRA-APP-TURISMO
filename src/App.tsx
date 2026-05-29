@@ -27,8 +27,8 @@ try {
 
 // ── ErrorBoundary: evita pantalla en blanco si hay un error en un componente hijo ──
 interface EBState { hasError: boolean; message: string; }
-class ErrorBoundary extends Component<{ children: ReactNode }, EBState> {
-  constructor(props: { children: ReactNode }) {
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, EBState> {
+  constructor(props: { children: React.ReactNode }) {
     super(props);
     this.state = { hasError: false, message: '' };
   }
@@ -2227,8 +2227,8 @@ function AppContent() {
                 <div className="absolute top-0 right-0 w-32 h-32 bg-amber-50 rounded-full blur-3xl opacity-30 -mr-16 -mt-16" />
                 
                 <div className="grid grid-cols-7 mb-4">
-                  {['D', 'L', 'M', 'M', 'J', 'V', 'S'].map(d => (
-                    <div key={d} className="text-center text-[10px] font-black text-slate-300 uppercase tracking-widest">{d}</div>
+                  {['D', 'L', 'M', 'M', 'J', 'V', 'S'].map((d, index) => (
+                    <div key={`${d}-${index}`} className="text-center text-[10px] font-black text-slate-300 uppercase tracking-widest">{d}</div>
                   ))}
                 </div>
 
