@@ -7,7 +7,7 @@
 
     <!-- PWA: manifest con ruta absoluta -->
     <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#2d1b0d" />
+    <meta name="theme-color" content="#1c0900" />
     <meta name="mobile-web-app-capable" content="yes" />
 
     <!-- iOS PWA -->
@@ -27,11 +27,21 @@
     <meta property="og:title" content="Wayra: Fiestas de Nariño" />
     <meta property="og:description" content="Explora las fiestas tradicionales de los 64 municipios de Nariño." />
     <meta property="og:type" content="website" />
+
+    <!-- Fondo oscuro inmediato para que no parpadee blanco antes del splash -->
+    <style>
+      html, body, #root {
+        margin: 0;
+        padding: 0;
+        background: #1c0900;
+        min-height: 100dvh;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
     <noscript>
-      <div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;background:#faf7f2;color:#92400e;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;background:#1c0900;color:#fbbf24;flex-direction:column;gap:12px">
         <img src="/icon-192.png" style="width:72px;border-radius:16px" alt="Wayra"/>
         <strong>Wayra necesita JavaScript para funcionar.</strong>
         <span style="font-size:0.85rem">Por favor activa JavaScript en tu navegador.</span>

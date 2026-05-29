@@ -194,7 +194,14 @@ export default function SplashScreen({ onFinish }: SplashScreenProps) {
             <AnimatePresence mode="popLayout">
               {wordIndex >= 0 &&
                 PHRASES.slice(0, wordIndex + 1).map((word, i) => (
-                  <React.Fragment key={word}>
+                  <span
+                    key={word}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                    }}
+                  >
                     {i > 0 && (
                       <motion.span
                         initial={{ opacity: 0 }}
@@ -228,7 +235,7 @@ export default function SplashScreen({ onFinish }: SplashScreenProps) {
                     >
                       {word}
                     </motion.span>
-                  </React.Fragment>
+                  </span>
                 ))}
             </AnimatePresence>
           </div>
