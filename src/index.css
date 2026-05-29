@@ -106,6 +106,16 @@ body {
   text-wrap: balance;
 }
 
+/* ── Scrollbar oculto ────────────────────────────────────── */
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
 /* Custom transitions */
 .page-transition-enter {
   opacity: 0;
