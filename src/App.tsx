@@ -1182,9 +1182,9 @@ function AppContent() {
   }, [municipalities]);
 
   return (
-    <div className="min-h-screen font-sans text-slate-900 pb-24 indigenous-pattern">
+    <div className="min-h-screen font-sans text-slate-900 pb-24 indigenous-pattern overflow-x-hidden">
       {/* Video Header */}
-      <div className="relative h-64 w-full overflow-hidden bg-amber-950 flex items-center justify-center">
+      <div className="relative h-48 sm:h-64 md:h-80 lg:h-96 w-full overflow-hidden bg-amber-950 flex items-center justify-center">
         <iframe
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full w-auto h-auto aspect-video z-0 pointer-events-none scale-110"
           src="https://www.youtube.com/embed/OeWA2bLyNn4?autoplay=1&mute=1&loop=1&playlist=OeWA2bLyNn4&controls=0&rel=0&modestbranding=1&showinfo=0&iv_load_policy=3"
@@ -1204,7 +1204,7 @@ function AppContent() {
       {/* Header */}
       <header className="earthy-gradient text-white shadow-2xl sticky top-0 z-30 overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://www.svgrepo.com/show/381534/star-8.svg')] bg-[length:400px_400px] bg-center opacity-5 pointer-events-none" />
-        <div className="max-w-md mx-auto px-6 py-8 flex flex-col items-center relative">
+        <div className="max-w-screen-xl mx-auto px-6 py-6 md:py-8 flex flex-col items-center relative">
           <motion.div 
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -1217,9 +1217,9 @@ function AppContent() {
                 transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                 className="absolute inset-0 border border-amber-400/30 rounded-full scale-150"
               />
-              <img src={wairaLogo} className="w-16 h-16 object-contain relative z-10" alt="Waira Logo" referrerPolicy="no-referrer" />
+              <img src={wairaLogo} className="w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 object-contain relative z-10" alt="Waira Logo" referrerPolicy="no-referrer" />
             </div>
-            <h1 className="text-5xl font-logo font-medium text-center leading-none text-amber-400 tracking-tight select-none">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-logo font-medium text-center leading-none text-amber-400 tracking-tight select-none">
               Wayra
             </h1>
             <div className="flex items-center gap-3 mt-4">
@@ -1256,7 +1256,7 @@ function AppContent() {
         )}
       </AnimatePresence>
 
-      <main className="max-w-md mx-auto px-6 mt-6 relative z-20 pb-12">
+      <main className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-12 mt-6 relative z-20 pb-12">
         {/* PWA Install Banner — solo visible cuando el navegador confirma que la app no está instalada */}
         <AnimatePresence>
           {deferredPrompt && !isStandalone && (
@@ -1686,7 +1686,7 @@ function AppContent() {
                             const mun = municipalities.find(m => m.name === dest.name);
                             if (mun) setSelectedMunicipality(mun);
                           }}
-                          className="shrink-0 w-48 p-5 rounded-[32px] bg-white border border-slate-50 shadow-xl relative overflow-hidden cursor-pointer group"
+                          className="shrink-0 w-44 sm:w-52 p-4 sm:p-5 rounded-[32px] bg-white border border-slate-50 shadow-xl relative overflow-hidden cursor-pointer group"
                         >
                           <div className={`absolute top-4 right-4 w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-black shadow-inner transition-colors ${
                             idx === 0 ? 'bg-amber-400 text-amber-950' : 
@@ -2232,7 +2232,7 @@ function AppContent() {
                   ))}
                 </div>
 
-                <div className="grid grid-cols-7 gap-1">
+                <div className="grid grid-cols-7 gap-0.5 sm:gap-1">
                   {Array.from({ length: getFirstDayOfMonth(calDate.getFullYear(), calDate.getMonth()) }).map((_, i) => (
                     <div key={`empty-${i}`} className="aspect-square" />
                   ))}
@@ -2305,22 +2305,22 @@ function AppContent() {
                         key={`cal-list-${m.name}`}
                         whileHover={{ x: 5 }}
                         onClick={() => setSelectedMunicipality(m)}
-                        className={`p-6 rounded-[32px] bg-white border shadow-xl flex items-center gap-6 cursor-pointer transition-all group
+                        className={`p-5 sm:p-6 rounded-[32px] bg-white border shadow-xl flex items-start gap-4 sm:gap-6 cursor-pointer transition-all group
                           ${isSaved ? 'border-amber-200' : 'border-slate-50'}
                         `}
                       >
-                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg shrink-0 transition-colors
+                        <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center shadow-lg shrink-0 transition-colors mt-1
                           ${isSaved ? 'bg-amber-700 text-white shadow-amber-900/20' : 'bg-slate-50 text-slate-300 group-hover:bg-amber-50 group-hover:text-amber-600'}
                         `}>
                           {isSaved ? <Bell size={24} /> : <PartyPopper size={24} />}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-2 mb-1">
+                          <div className="flex flex-wrap items-center gap-2 mb-1">
                             {isSaved && <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-[8px] font-black uppercase tracking-widest rounded-full">Programado</span>}
-                            <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest">{m.date}</p>
+                            <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest leading-relaxed">{m.date}</p>
                           </div>
-                          <h4 className="font-display italic text-xl text-slate-800 leading-tight truncate">{m.name}</h4>
-                          <p className="text-xs text-slate-400 truncate mt-1 italic">{m.festival}</p>
+                          <h4 className="font-display italic text-xl text-slate-800 leading-tight break-words">{m.name}</h4>
+                          <p className="text-xs text-slate-400 mt-1 italic leading-relaxed break-words">{m.festival}</p>
                         </div>
                         <div className="w-10 h-10 rounded-full border border-slate-50 flex items-center justify-center text-slate-200 group-hover:text-amber-600 group-hover:border-amber-100 transition-all">
                           <ChevronRight size={20} />
@@ -2683,7 +2683,7 @@ function AppContent() {
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
                 {/* Review Form */}
                 <div className="space-y-6">
                   <div className="bg-white p-8 rounded-[48px] shadow-2xl border border-slate-50 relative overflow-hidden">
@@ -2921,7 +2921,7 @@ function AppContent() {
       </main>
 
       {/* Navigation Bar */}
-      <nav className="fixed bottom-8 left-1/2 -translate-x-1/2 w-[92%] sm:w-auto min-w-[320px] bg-amber-950/95 backdrop-blur-xl border border-white/10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] z-40 px-4 sm:px-8 py-4 flex justify-between items-center gap-1 sm:gap-4 md:gap-6">
+      <nav className="fixed bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 w-[96%] sm:w-auto min-w-[320px] max-w-[600px] bg-amber-950/95 backdrop-blur-xl border border-white/10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] z-40 px-3 sm:px-6 lg:px-10 py-3 sm:py-4 flex justify-between items-center gap-1 sm:gap-3 md:gap-5">
         <button 
           onClick={() => setView('home')}
           className={`flex flex-col items-center gap-1.5 transition-all duration-300 ${view === 'home' ? 'text-amber-600 scale-110' : 'text-white/40 hover:text-white/80'}`}

@@ -9,21 +9,62 @@
   --font-logo: "Outfit", sans-serif;
 }
 
-/* ── Scrollbar completamente oculto ─────────────────────── */
+/* ── Ocultar barras de scroll del navegador (html/body) ───── */
 html,
-body,
-* {
+body {
+  overflow-x: hidden;        /* elimina scroll horizontal + barra inferior con flechas */
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
 
 html::-webkit-scrollbar,
-body::-webkit-scrollbar,
-*::-webkit-scrollbar {
+body::-webkit-scrollbar {
   display: none !important;
   width: 0 !important;
   height: 0 !important;
-  background: transparent !important;
+}
+
+/* ── Clases de scrollbar internas ───────────────────────────  */
+
+/* Sin barra — filas horizontales de tarjetas */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Scrollbar estilizado — listas verticales internas */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(146, 64, 14, 0.4) rgba(250, 247, 242, 0.6);
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(250, 247, 242, 0.6);
+  border-radius: 99px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    rgba(217, 119, 6, 0.7) 0%,
+    rgba(146, 64, 14, 0.6) 50%,
+    rgba(69, 26, 3, 0.5) 100%
+  );
+  border-radius: 99px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(217, 119, 6, 1) 0%,
+    rgba(146, 64, 14, 0.9) 50%,
+    rgba(69, 26, 3, 0.8) 100%
+  );
 }
 
 /* Leaflet Custom Styles */
