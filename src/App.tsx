@@ -3016,7 +3016,7 @@ function AppContent() {
                 </button>
               </div>
               
-              <div className="flex-1 overflow-y-auto p-6 indigenous-pattern">
+              <div className="flex-1 overflow-y-auto p-6 indigenous-pattern custom-scrollbar">
                 {selectedGalleryCategory === 'curiosidades' ? (
                   <div className="space-y-6">
                     {CURIOSITIES.map((item) => (
