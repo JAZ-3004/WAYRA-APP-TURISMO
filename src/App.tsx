@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect, Component, ReactNode } from 'react';
+import SplashScreen from './SplashScreen';
 import { motion, AnimatePresence } from 'motion/react';
 import { Search, MapPin, Calendar as CalendarIcon, PartyPopper, ChevronLeft, ChevronRight, Info, X, Music, Map as MapIcon, Navigation, ExternalLink, Locate, ArrowRight, RefreshCw, Loader2, Bus, List, Compass, Bell, Trash2, Clock, ShoppingBag } from 'lucide-react';
 import { MUNICIPALITIES as FALLBACK_MUNICIPALITIES, PROVINCES, Municipality, GALLERY_CATEGORIES, GALLERY_IMAGES, GalleryItem, PASTO_EVENTS, DetailedEvent, TypicalFood, CURIOSITIES, WORDS_NARINENSES, DIALECT_INFO } from './data';
@@ -3283,8 +3284,10 @@ function AppContent() {
 }
 
 export default function App() {
+  const [showSplash, setShowSplash] = React.useState(true);
   return (
     <ErrorBoundary>
+      {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
       <AppContent />
     </ErrorBoundary>
   );
