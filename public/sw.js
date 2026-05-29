@@ -1,57 +1,56 @@
-const CACHE_NAME = 'wayra-pwa-v1';
-const URLS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/icon-192.png',
-  '/icon-512.png'
-];
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App.tsx';
+import './index.css';
 
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(URLS_TO_CACHE).catch((error) => {
-        console.warn('Algunas URLs de la PWA no pudieron precargarse durante el inicio, pero la instalación continúa:', error);
+// ── Registro del Service Worker para PWA ────────────────────
+// Solo se registra en producción o cuando esté fuera de un iframe
+// (en AI Studio corre en un iframe, por eso se bloquea la instalación)
+const registerServiceWorker = () => {
+  if (!('serviceWorker' in navigator)) return;
+
+  // Detectar si estamos dentro de un iframe (AI Studio preview)
+  const isInIframe = (() => {
+    try {
+      return window.self !== window.top;
+    } catch {
+      return true; // bloqueado por cross-origin → es un iframe
+    }
+  })();
+
+  if (isInIframe) {
+    console.info(
+      '[PWA] Service Worker no registrado: la app corre dentro de un iframe (AI Studio). ' +
+      'Abre la app en una pestaña propia para instalarla.'
+    );
+    return;
+  }
+
+  const register = () => {
+    navigator.serviceWorker
+      .register('/sw.js', { scope: '/' })
+      .then((reg) => {
+        console.log('[PWA] Service Worker registrado. Scope:', reg.scope);
+
+        // Comprobar actualizaciones cada vez que se carga la página
+        reg.update().catch(() => {});
+      })
+      .catch((err) => {
+        console.error('[PWA] Error al registrar el Service Worker:', err);
       });
-    })
-  );
-  self.skipWaiting();
-});
+  };
 
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys
-          .filter((key) => key !== CACHE_NAME)
-          .map((key) => caches.delete(key))
-      )
-    )
-  );
-  self.clients.claim();
-});
-
-self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
-
-  const url = new URL(event.request.url);
-  // Only handle same-origin requests (our local app files)
-  if (url.origin !== self.location.origin) {
-    return;
+  if (document.readyState === 'loading') {
+    window.addEventListener('load', register);
+  } else {
+    register();
   }
+};
 
-  // Skip API routes or dev websocket connections
-  if (
-    url.pathname.includes('/api/') || 
-    url.pathname.includes('socket') || 
-    url.pathname.includes('hmr')
-  ) {
-    return;
-  }
+registerServiceWorker();
 
-  event.respondWith(
-    caches.match(event.request).then((cached) => {
-      return cached || fetch(event.request);
-    })
-  );
-});
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>
+);
